@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:windowSoftInputMode="stateHidden">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <!--******* Offerwalls ***********-->
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/offerwalls_list"
+                        android:nestedScrollingEnabled="false"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="visible"
+                        android:clipToPadding="false"
+                        android:paddingTop="@dimen/space10" />
+
+                    <ImageView
+                        android:id="@+id/emptyImage"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/space120"
+                        android:layout_width="@dimen/space80"
+                        android:layout_height="@dimen/space80"
+                        android:src="@drawable/ic_no_data"
+                        android:contentDescription="@string/app_name"/>
+
+                    <TextView
+                        android:id="@+id/emptyText"
+                        android:text="@string/unabe_to_load_offerwalls"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:layout_marginTop="@dimen/space15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <Button
+                        android:id="@+id/retryButton"
+                        android:layout_width="wrap_content"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space20"
+                        android:text="@string/retry"
+                        android:textColor="@color/white"
+                        android:background="@drawable/button_primary"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressBarOfferwalls"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:layout_marginTop="@dimen/space120"
+                        android:layout_marginBottom="@dimen/space40"
+                        android:layout_gravity="center"
+                        android:indeterminateTint="@color/colorPrimary" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

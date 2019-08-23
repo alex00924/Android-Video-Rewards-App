@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.droidoxy.easymoneyrewards">
+
+    <!-- Required Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--    Added in v2.1    -->
+    <uses-sdk tools:overrideLibrary="com.google.firebase.messaging,com.google.firebase.iid"/>
+
+    <!--  Required for Notifications  -->
+    <uses-permission android:name=".permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <permission android:name=".permission.C2D_MESSAGE" android:protectionLevel="signature" />
+
+    <application
+        android:name=".app.App"
+        android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher"
+        tools:replace="android:icon"
+        android:usesCleartextTraffic="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <!--    Added in v2.1    -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+		
+        <activity
+            android:name=".activities.AppActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:theme="@style/MainTheme"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.ActivityBase"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.RecoveryActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.LoginActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".activities.SignupActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/title_activity_sign_up"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".activities.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.MainActivity" android:theme="@style/MainTheme" />
+
+        <activity android:name=".activities.AboutActivity" />
+        <activity android:name=".activities.FragmentsActivity" />
+
+
+        <!-- Firebase Components -->
+        <service android:name=".services.MyFirebaseMessagingService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- END Firebase Components  -->
+
+        <!-- Admob components -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_appId"/>
+
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <!-- END Admob components -->
+
+        <!-- Facebook components -->
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity android:name="com.facebook.FacebookActivity" android:configChanges= "keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:label="@string/app_name" />
+        <activity android:name="com.facebook.CustomTabActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+        <!-- END Facebook components -->
+
+        <!-- Web Videos Activities -->
+        <activity android:name="com.thefinestartist.ytpa.YouTubePlayerActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:screenOrientation="sensor" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <meta-data android:name="com.thefinestartist.ytpa.YouTubePlayerActivity.ApiKey" android:value="AIzaSyAOfxiG4aV66h3XmssCEkP3qCvCqMbDGDI" />
+        <!--  END Web Video Activity -->
+
+        <!-- StartApp Components -->
+        <activity android:name="com.startapp.android.publish.ads.list3d.List3DActivity"
+            android:theme="@android:style/Theme" />
+
+        <activity android:name="com.startapp.android.publish.adsCommon.activities.OverlayActivity"
+            android:theme="@android:style/Theme.Translucent"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity android:name="com.startapp.android.publish.adsCommon.activities.FullScreenActivity"
+            android:theme="@android:style/Theme"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <service android:name="com.startapp.android.publish.common.metaData.PeriodicMetaDataService" />
+        <service android:name="com.startapp.android.publish.common.metaData.InfoEventService" />
+        <service android:name="com.startapp.android.publish.common.metaData.PeriodicJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver android:name="com.startapp.android.publish.common.metaData.BootCompleteListener" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <!-- End of StartApp integration -->
+
+
+    </application>
+
+</manifest>
