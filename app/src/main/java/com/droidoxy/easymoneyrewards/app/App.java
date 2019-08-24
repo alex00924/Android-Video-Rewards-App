@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -180,7 +181,7 @@ public class App extends MultiDexApplication implements Constants {
     }
 
     public Boolean authorize(JSONObject authObj) {
-
+        Log.e("Auth:---", authObj.toString());
         try {
 
             if (authObj.has("error_code")) {
@@ -223,6 +224,7 @@ public class App extends MultiDexApplication implements Constants {
                 appStorage.store("mobile", accountObj.getString("mobile"));
                 appStorage.store("balance", accountObj.getString("points"));
                 appStorage.store("refer_code", accountObj.getString("refer"));
+                appStorage.store("user_premium", accountObj.getString("premium"));
 
                 if(accountObj.getString("refered").equals("1")){
                     appStorage.store("refer_status", true);
@@ -268,12 +270,14 @@ public class App extends MultiDexApplication implements Constants {
 
                 // Admob Rewarded Videos
                 appStorage.store("AdmobVideoCredit_Amount", configObj.getString("AdmobVideoCredit_Amount"));
+                appStorage.store("AdmobVideoCredit_Premium_Amount", configObj.getString("AdmobVideoCredit_Premium_Amount"));
                 appStorage.store("AdmobVideoCredit_Title", configObj.getString("AdmobVideoCredit_Title"));
 
                 // StartApp
                 appStorage.store("StartAppActive", configObj.getBoolean("StartAppActive"));
                 appStorage.store("StartApp_AppID", configObj.getString("StartApp_AppID"));
                 appStorage.store("StartAppVideoCredit_Amount", configObj.getString("StartAppVideoCredit_Amount"));
+                appStorage.store("StartAppVideoCredit_Premium_Amount", configObj.getString("StartAppVideoCredit_Premium_Amount"));
                 appStorage.store("StartAppVideoCredit_Title", configObj.getString("StartAppVideoCredit_Title"));
             }
 

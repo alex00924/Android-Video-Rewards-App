@@ -8,7 +8,11 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <!--    Added in v2.1    -->
     <uses-sdk tools:overrideLibrary="com.google.firebase.messaging,com.google.firebase.iid"/>
 
@@ -65,11 +69,19 @@
             android:screenOrientation="portrait" />
 
         <activity android:name=".activities.IntroActivity" android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.MainActivity" android:theme="@style/MainTheme" />
+        <activity android:name=".activities.MainActivity"
+            android:theme="@style/MainTheme"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".activities.AboutActivity" />
-        <activity android:name=".activities.FragmentsActivity" />
+        <activity android:name=".activities.FragmentsActivity"
+            android:screenOrientation="portrait"/>
 
+        <activity android:name=".activities.VideoPlayerActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.NewsPlayerActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- Firebase Components -->
         <service android:name=".services.MyFirebaseMessagingService" android:exported="false">
@@ -78,6 +90,11 @@
             </intent-filter>
         </service>
         <!-- END Firebase Components  -->
+
+        <!--paystack-->
+        <meta-data
+            android:name="co.paystack.android.PublicKey"
+            android:value="pk_test_b771f24202cabd83c4f2fc9cbd32528d9615d8c6"/>
 
         <!-- Admob components -->
         <meta-data

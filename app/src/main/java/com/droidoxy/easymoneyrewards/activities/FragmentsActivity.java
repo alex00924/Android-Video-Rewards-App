@@ -14,6 +14,8 @@ import com.android.volley.VolleyError;
 import com.droidoxy.easymoneyrewards.R;
 import com.droidoxy.easymoneyrewards.app.App;
 import com.droidoxy.easymoneyrewards.fragments.InstructionsFragment;
+import com.droidoxy.easymoneyrewards.fragments.NewsFragment;
+import com.droidoxy.easymoneyrewards.fragments.PremiumFragment;
 import com.droidoxy.easymoneyrewards.fragments.RedeemFragment;
 import com.droidoxy.easymoneyrewards.fragments.ReferFragment;
 import com.droidoxy.easymoneyrewards.fragments.TransactionsFragment;
@@ -21,9 +23,6 @@ import com.droidoxy.easymoneyrewards.fragments.VideosFragment;
 import com.droidoxy.easymoneyrewards.utils.AppUtils;
 import com.droidoxy.easymoneyrewards.utils.CustomRequest;
 import com.droidoxy.easymoneyrewards.utils.Dialogs;
-import com.thefinestartist.ytpa.YouTubePlayerActivity;
-import com.thefinestartist.ytpa.enums.Orientation;
-import com.thefinestartist.ytpa.utils.YouTubeUrlParser;
 
 import org.json.JSONObject;
 
@@ -110,6 +109,20 @@ public class FragmentsActivity extends ActivityBase {
 
                     getSupportActionBar().setTitle(R.string.all_videos);
                     transaction.add(R.id.frame_layout, new VideosFragment(), "webvids");
+
+                    break;
+
+                case "news" :
+
+                    getSupportActionBar().setTitle(R.string.all_news);
+                    transaction.add(R.id.frame_layout, new NewsFragment(), "news");
+
+                    break;
+
+                case "upgrade":
+
+                    getSupportActionBar().setTitle(R.string.all_news);
+                    transaction.add(R.id.frame_layout, new PremiumFragment(), "upgrade");
 
                     break;
 
@@ -288,17 +301,26 @@ public class FragmentsActivity extends ActivityBase {
 
     }
 
-    public void playVideo(String videoId, String videoPoints, String videoURL, String openLink){
+    public void playVideo(String videoId, String videoPoints, String videoURL, String videoTitle, String videoThumb){
 
-        Intent playVideo = new Intent(ctx, YouTubePlayerActivity.class);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_VIDEO_ID, YouTubeUrlParser.getVideoId(videoURL));
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_REWARDS, videoPoints);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_ID, videoId);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_LINK, openLink);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_ORIENTATION, Orientation.ONLY_LANDSCAPE);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_SHOW_AUDIO_UI, false);
-        playVideo.putExtra(YouTubePlayerActivity.EXTRA_HANDLE_ERROR, false);
+        Intent playVideo = new Intent(ctx, VideoPlayerActivity.class);
+        playVideo.putExtra(VideoPlayerActivity.EXTRA_VIDEO_ID, videoId);
+        playVideo.putExtra(VideoPlayerActivity.EXTRA_VIDEO_THUMB, videoThumb);
+        playVideo.putExtra(VideoPlayerActivity.EXTRA_REWARDS, videoPoints);
+        playVideo.putExtra(VideoPlayerActivity.EXTRA_VIDEO_URL, videoURL);
+        playVideo.putExtra(VideoPlayerActivity.EXTRA_VIDEO_TITLE, videoTitle);
         startActivityForResult(playVideo,1);
+    }
+
+    public void playNews(String newsId, String newsPoints, String newsTitle, String newsContents, String newsImage){
+
+        Intent playNews = new Intent(ctx, NewsPlayerActivity.class);
+        playNews.putExtra(NewsPlayerActivity.EXTRA_NEWS_ID, newsId);
+        playNews.putExtra(NewsPlayerActivity.EXTRA_NEWS_IMAGE, newsImage);
+        playNews.putExtra(NewsPlayerActivity.EXTRA_REWARDS, newsPoints);
+        playNews.putExtra(NewsPlayerActivity.EXTRA_NEWS_TITLE, newsTitle);
+        playNews.putExtra(NewsPlayerActivity.EXTRA_NEWS_CONTENTS, newsContents);
+        startActivityForResult(playNews,2);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -308,18 +330,28 @@ public class FragmentsActivity extends ActivityBase {
 
                 String videoId = data.getStringExtra("id");
                 String Points = data.getStringExtra("points");
-                String openLink = data.getStringExtra("openLink");
 
                 if(!videoId.isEmpty() && !Points.isEmpty()){
-                    awardVideo(Points,videoId,openLink);
+                    awardVideo(Points,videoId);
                 }
 
             }
+        } else if (requestCode == 2) {
+            if(resultCode == RESULT_OK) {
+
+                String newsId = data.getStringExtra("id");
+                String Points = data.getStringExtra("points");
+
+                if(!newsId.isEmpty() && !Points.isEmpty()){
+                    awardNews(Points,newsId);
+                }
+
+            }
+
         }
     }
 
-    void awardVideo(final String Points,final String videoId,final String openLink){
-        if(!openLink.equals("none")){ AppUtils.parse(ctx,openLink); }
+    void awardVideo(final String Points,final String videoId){
 
         CustomRequest videoRewardRequest = new CustomRequest(Request.Method.POST, APP_VIDEOSTATUS,null,
                 new Response.Listener<JSONObject>() {
@@ -400,4 +432,84 @@ public class FragmentsActivity extends ActivityBase {
 
     }
 
+    void awardNews(final String Points,final String newsId){
+
+        CustomRequest videoRewardRequest = new CustomRequest(Request.Method.POST, APP_NEWSSTATUS,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try{
+
+                            JSONObject Response = new JSONObject(App.getInstance().deData(response.toString()));
+
+                            if(!Response.getBoolean("error") && Response.getInt("error_code") == ERROR_SUCCESS){
+
+                                // Video saved Success
+                                App.getInstance().store("APPNEWS_"+newsId,true);
+                                AppUtils.toastShort(ctx,Points+ " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.successfull_received));
+
+                            }else if(Response.getInt("error_code") == 420) {
+
+                                // 420 - Video watched Already
+                                AppUtils.toastShort(ctx,getResources().getString(R.string.already_read));
+                                App.getInstance().store("APPNEWS_"+newsId,true);
+
+                            }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
+
+                                Dialogs.validationError(ctx,Response.getInt("error_code"));
+
+                            }else if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(ctx,Response.getString("error_code"),Response.getString("error_description"),false,false,"",getResources().getString(R.string.ok),null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(ctx,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }catch (Exception e){
+
+                            if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(ctx,"Got Error",e.toString() + ", please contact developer immediately",false,false,"","ok",null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(ctx,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }
+
+                    }},new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if(DEBUG_MODE){
+
+                    // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                    Dialogs.errorDialog(ctx,"Got Error",error.toString(),true,false,"","ok",null);
+
+                }else{
+
+                    // Server error
+                    AppUtils.toastShort(ctx,getResources().getString(R.string.msg_server_problem));
+                }
+
+            }}){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("data", App.getInstance().getDataCustom(newsId,Points));
+                return params;
+            }
+        };
+
+        App.getInstance().addToRequestQueue(videoRewardRequest);
+
+    }
 }

@@ -20,14 +20,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.droidoxy.easymoneyrewards.R;
 import com.droidoxy.easymoneyrewards.activities.FragmentsActivity;
-import com.droidoxy.easymoneyrewards.adapters.VideosAdapter;
+import com.droidoxy.easymoneyrewards.adapters.NewsAdapter;
 import com.droidoxy.easymoneyrewards.app.App;
-import com.droidoxy.easymoneyrewards.model.Videos;
+import com.droidoxy.easymoneyrewards.model.News;
 import com.droidoxy.easymoneyrewards.utils.CustomRequest;
 import com.droidoxy.easymoneyrewards.utils.Dialogs;
-import com.thefinestartist.ytpa.enums.Quality;
-import com.thefinestartist.ytpa.utils.YouTubeThumbnail;
-import com.thefinestartist.ytpa.utils.YouTubeUrlParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,24 +33,24 @@ import java.util.ArrayList;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-import static com.droidoxy.easymoneyrewards.constants.Constants.APP_VIDEOS;
+import static com.droidoxy.easymoneyrewards.constants.Constants.APP_NEWS;
 import static com.droidoxy.easymoneyrewards.constants.Constants.DEBUG_MODE;
 
 /**
  * Created by DroidOXY
  */
  
-public class VideosFragment extends Fragment {
+public class NewsFragment extends Fragment {
 
     TextView emptyText;
     ImageView emptyImage;
-    RecyclerView videos;
-    VideosAdapter videosAdapter;
-    ArrayList<Videos> allvideos;
+    RecyclerView news;
+    NewsAdapter newsAdapter;
+    ArrayList<News> allNews;
     ProgressBar progressBar;
     Context ctx;
 
-    public VideosFragment() {
+    public NewsFragment() {
         // Required empty public constructor
     }
 
@@ -69,23 +66,23 @@ public class VideosFragment extends Fragment {
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_videos, container, false);
+        view = inflater.inflate(R.layout.fragment_news, container, false);
 
         emptyText = view.findViewById(R.id.empty);
         emptyImage = view.findViewById(R.id.emptyImage);
         progressBar = view.findViewById(R.id.progressBar);
 
-        videos = view.findViewById(R.id.videos);
+        news = view.findViewById(R.id.news);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ctx);
-        videos.setLayoutManager(layoutManager);
-        videos.setItemAnimator(new DefaultItemAnimator());
+        news.setLayoutManager(layoutManager);
+        news.setItemAnimator(new DefaultItemAnimator());
 
-        allvideos = new ArrayList<>();
+        allNews = new ArrayList<>();
 
-        videosAdapter = new VideosAdapter(ctx,allvideos);
-        videos.setAdapter(videosAdapter);
+        newsAdapter = new NewsAdapter(ctx, allNews);
+        news.setAdapter(newsAdapter);
 
-        CustomRequest transactionsRequest = new CustomRequest(Request.Method.POST, APP_VIDEOS,null,
+        CustomRequest transactionsRequest = new CustomRequest(Request.Method.POST, APP_NEWS,null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -96,39 +93,32 @@ public class VideosFragment extends Fragment {
 
                             if (!Response.getBoolean("error")) {
 
-                                JSONArray videos = Response.getJSONArray("videos");
+                                JSONArray news = Response.getJSONArray("news");
 
-                                for (int i = 0; i < videos.length(); i++) {
+                                for (int i = 0; i < news.length(); i++) {
 
-                                    JSONObject obj = videos.getJSONObject(i);
+                                    JSONObject obj = news.getJSONObject(i);
 
-                                    Videos singleVideoItem = new Videos();
+                                    News singleNewsItem = new News();
 
-                                    String videoId = obj.getString("video_id");
+                                    singleNewsItem.setNewsId(obj.getString("news_id"));
+                                    singleNewsItem.setTitle(obj.getString("news_title"));
+                                    singleNewsItem.setContents(obj.getString("news_content"));
+                                    singleNewsItem.setAmount(obj.getString("news_amount"));
+                                    singleNewsItem.setAmountPremium(obj.getString("news_amount_premium"));
+                                    singleNewsItem.setImage(obj.getString("news_image"));
+                                    singleNewsItem.setStatus(obj.getString("news_status"));
 
-                                    singleVideoItem.setVideoId(videoId);
-                                    singleVideoItem.setTitle(obj.getString("video_title"));
-                                    singleVideoItem.setSubtitle(obj.getString("video_subtitle"));
-                                    singleVideoItem.setAmount(obj.getString("video_amount"));
-                                    singleVideoItem.setAmountPremium(obj.getString("video_amount_premium"));
-                                    singleVideoItem.setDuration(obj.getString("video_duration"));
-
-                                    String videoURL = obj.getString("video_url");
-                                    singleVideoItem.setImage(obj.getString("video_thumbnail"));
-
-                                    singleVideoItem.setVideoURL(videoURL);
-                                    singleVideoItem.setStatus(obj.getString("video_status"));
-
-                                    if(obj.get("video_status").equals("Active") && !App.getInstance().get("APPVIDEO_"+videoId,false)){
-                                        allvideos.add(singleVideoItem);
+                                    if(obj.get("news_status").equals("Active") && !App.getInstance().get("APPNEWS_"+ obj.getString("news_id"),false)){
+                                        allNews.add(singleNewsItem);
                                         progressBar.setVisibility(View.GONE);
                                     }
 
                                 }
 
-                                videosAdapter.notifyDataSetChanged();
+                                newsAdapter.notifyDataSetChanged();
 
-                                checkHaveVideos();
+                                checkHaveNews();
 
                             }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
 
@@ -215,7 +205,7 @@ public class VideosFragment extends Fragment {
 
     }
 
-    void checkHaveVideos(){
+    void checkHaveNews(){
 
         if(progressBar.getVisibility() == View.VISIBLE){
             emptyText.setVisibility(View.VISIBLE);

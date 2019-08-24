@@ -16,7 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.droidoxy.easymoneyrewards.R;
 import com.droidoxy.easymoneyrewards.activities.FragmentsActivity;
 import com.droidoxy.easymoneyrewards.app.App;
-import com.droidoxy.easymoneyrewards.model.Videos;
+import com.droidoxy.easymoneyrewards.model.News;
 
 import java.util.List;
 
@@ -24,12 +24,12 @@ import java.util.List;
  * Created by DroidOXY
  */
 
-public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder>{
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder>{
 
     private Context context;
-    private List<Videos> listItem;
+    private List<News> listItem;
 
-    public VideosAdapter(Context context, List<Videos> listItem) {
+    public NewsAdapter(Context context, List<News> listItem) {
         this.context = context;
         this.listItem = listItem;
     }
@@ -37,7 +37,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_video_list,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news_list,parent,false);
 
         return new ViewHolder(view);
     }
@@ -48,28 +48,25 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
         boolean bPremium = strPremium.equals("1") ? true : false;
 
         String PrevItem;
-        final Videos video = listItem.get(position);
+        final News news = listItem.get(position);
 
-        final String videoId = video.getVideoId();
-        final String title = video.getTitle();
-        final String subtitle = video.getSubtitle();
-        final String videoURL = video.getVideoURL();
-        final String videoPoints = bPremium ? video.getAmountPremium() : video.getAmount();
-        final String timeDuration = video.getDuration();
-        final String image = video.getImage();
-        final String status = video.getStatus();
+        final String newsId = news.getNewsId();
+        final String title = news.getTitle();
+        final String content = news.getContents();
+        final String newsPoints = bPremium ? news.getAmountPremium() : news.getAmount();
+        final String image = news.getImage();
+        final String status = news.getStatus();
 
         holder.title.setText(title);
-        if(App.getInstance().get("APPVIDEO_"+videoId,false)){
+        if(App.getInstance().get("APPNEWS_"+newsId,false)){
 
             holder.SingleItem.setVisibility(View.GONE);
 
         }else{
 
-            holder.subtitle.setText(subtitle);
+            holder.subtitle.setText(content.substring(0, 20));
         }
-        holder.duration.setText("Duration : " + timeDuration);
-        holder.amount.setText("+ " + videoPoints);
+        holder.amount.setText("+ " + newsPoints);
 
         Glide.with(context).load(image)
                 .apply(new RequestOptions().override(120,120))
@@ -83,7 +80,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
             @Override
             public void onClick(View view) {
 
-                ((FragmentsActivity)context).playVideo(videoId, videoPoints, videoURL, title, image);
+                ((FragmentsActivity)context).playNews(newsId, newsPoints, title, content, image);
                 holder.SingleItem.setVisibility(View.GONE);
 
             }

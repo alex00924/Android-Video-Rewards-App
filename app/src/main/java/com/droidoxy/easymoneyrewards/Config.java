@@ -7,7 +7,7 @@ package com.droidoxy.easymoneyrewards;
 public class Config {
 
 	// Server URL ie., Webpanel Hosted Url
-	public static String SERVER_URL = "http://example.com/";
+	public static String SERVER_URL = "http://172.17.100.2:8000/";
 
 	// Manual/Email Login and Signup enable = true || disable = false
 	public static Boolean ENABLE_EMAIL_LOGIN = true;

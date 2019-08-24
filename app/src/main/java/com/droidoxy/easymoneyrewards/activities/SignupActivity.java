@@ -99,114 +99,117 @@ public class SignupActivity extends ActivityBase implements GoogleApiClient.OnCo
 
         App.getInstance().getCountryCode();
 
-         signupJoinBtn.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
+        signupJoinBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        username = signupUsername.getText().toString();
-        fullname = signupFullname.getText().toString();
-        password = signupPassword.getText().toString();
-        email = signupEmail.getText().toString();
+            username = signupUsername.getText().toString();
+            fullname = signupFullname.getText().toString();
+            password = signupPassword.getText().toString();
+            email = signupEmail.getText().toString();
 
-        if (verifyRegForm()) {
+                if (verifyRegForm()) {
 
-        if (App.getInstance().isConnected()) {
+                    if (App.getInstance().isConnected()) {
 
-        showpDialog();
+                        showpDialog();
 
-        CustomRequest jsonReq = new CustomRequest(Request.Method.POST, METHOD_ACCOUNT_SIGNUP, null,
-        new Response.Listener<JSONObject>() {
-        @Override
-        public void onResponse(JSONObject response) {
+                        CustomRequest jsonReq = new CustomRequest(Request.Method.POST, METHOD_ACCOUNT_SIGNUP, null,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
 
-        if(DEBUG_MODE){
-            AppUtils.toastLong(SignupActivity.this,response.toString());
-        }
+                                    if(DEBUG_MODE){
+                                        AppUtils.toastLong(SignupActivity.this,response.toString());
+                                    }
 
-        if (App.getInstance().authorize(response)) {
+                                    if (App.getInstance().authorize(response)) {
 
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
+                                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                            startActivity(i);
 
-        ActivityCompat.finishAffinity(SignupActivity.this);
+                                            ActivityCompat.finishAffinity(SignupActivity.this);
 
-        } else if(App.getInstance().getErrorCode() == 699 || App.getInstance().getErrorCode() == 999){
+                                    } else if(App.getInstance().getErrorCode() == 699 || App.getInstance().getErrorCode() == 999){
 
-            Dialogs.validationError(SignupActivity.this,App.getInstance().getErrorCode());
+                                        Dialogs.validationError(SignupActivity.this,App.getInstance().getErrorCode());
 
-        } else {
+                                    } else {
 
-        switch (App.getInstance().getErrorCode()) {
+                                        switch (App.getInstance().getErrorCode()) {
 
-        case ERROR_LOGIN_TAKEN : {
+                                            case ERROR_LOGIN_TAKEN : {
 
-        signupUsername.setError(getString(R.string.error_login_taken));
-        break;
-        }
+                                                signupUsername.setError(getString(R.string.error_login_taken));
+                                                break;
+                                            }
 
-        case ERROR_EMAIL_TAKEN : {
+                                            case ERROR_EMAIL_TAKEN : {
 
-        signupEmail.setError(getString(R.string.error_email_taken));
+                                                signupEmail.setError(getString(R.string.error_email_taken));
 
-        break;
-        }
+                                                break;
+                                            }
 
-        case ERROR_IP_TAKEN : {
+                                            case ERROR_IP_TAKEN : {
 
-            Dialogs.warningDialog(SignupActivity.this,getResources().getString(R.string.error_device_exists),getResources().getString(R.string.error_device_exists_description),true,false,"",getResources().getString(R.string.ok),null);
+                                                Dialogs.warningDialog(SignupActivity.this,getResources().getString(R.string.error_device_exists),getResources().getString(R.string.error_device_exists_description),true,false,"",getResources().getString(R.string.ok),null);
 
-            break;
-        }
+                                                break;
+                                            }
 
-        default: {
+                                            default:
+                                            {
 
-            if(DEBUG_MODE){
+                                                if(DEBUG_MODE){
 
-                //AppUtils.toastLong(SignupActivity.this,response.toString());
+                                                        //AppUtils.toastLong(SignupActivity.this,response.toString());
+                                                }
+
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    hidepDialog();
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                                    if(DEBUG_MODE){
+
+                                        //AppUtils.toastLong(SignupActivity.this,error.toString());
+                                    }
+
+                                    hidepDialog();
+                                }
+                            })
+                        {
+
+                            @Override
+                            protected Map<String, String> getParams() {
+                                Map<String, String> params = new HashMap<String, String>();
+                                params.put("username", username);
+                                params.put("fullname", fullname);
+                                params.put("password", password);
+                                params.put("email", email);
+                                params.put("clientId", CLIENT_ID);
+
+                                return params;
+                            }
+                        };
+
+                        App.getInstance().addToRequestQueue(jsonReq);
+
+                    } else {
+
+                        Toast.makeText(getApplicationContext(), R.string.msg_network_error, Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
-
-        break;
-        }
-        }
-        }
-
-        hidepDialog();
-        }
-        }, new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-
-        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-        if(DEBUG_MODE){
-
-            //AppUtils.toastLong(SignupActivity.this,error.toString());
-        }
-
-        hidepDialog();
-        }
-        }) {
-
-        @Override
-        protected Map<String, String> getParams() {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("fullname", fullname);
-        params.put("password", password);
-        params.put("email", email);
-        params.put("clientId", CLIENT_ID);
-
-        return params;
-        }
-        };
-
-        App.getInstance().addToRequestQueue(jsonReq);
-
-        } else {
-
-        Toast.makeText(getApplicationContext(), R.string.msg_network_error, Toast.LENGTH_SHORT).show();
-        }
-        }
-        }
         });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

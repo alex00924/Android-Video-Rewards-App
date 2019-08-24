@@ -1,6 +1,7 @@
 package com.droidoxy.easymoneyrewards.activities;
 
 // import statements
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
 
@@ -20,10 +21,12 @@ import java.util.TimerTask;
 
 import android.view.MenuItem;
 import android.content.Intent;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.FrameLayout;
 import android.support.v7.widget.Toolbar;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 
@@ -38,7 +41,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 // Google import statements
+import com.bumptech.glide.Glide;
 import com.droidoxy.easymoneyrewards.R;
+import com.droidoxy.easymoneyrewards.model.OfferWalls;
 import com.droidoxy.easymoneyrewards.views.CountDownTimerView;
 import com.droidoxy.easymoneyrewards.utils.Dialogs;
 import com.google.android.gms.ads.AdView;
@@ -51,8 +56,6 @@ import com.droidoxy.easymoneyrewards.app.App;
 import com.droidoxy.easymoneyrewards.utils.AppUtils;
 import com.droidoxy.easymoneyrewards.utils.CustomRequest;
 import com.droidoxy.easymoneyrewards.utils.UtilsMiscellaneous;
-import com.droidoxy.easymoneyrewards.utils.SlidingTabLayout;
-import com.droidoxy.easymoneyrewards.adapters.ViewPagerAdapter;
 import com.droidoxy.easymoneyrewards.views.ScrimInsetsFrameLayout;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
@@ -64,6 +67,8 @@ import com.startapp.android.publish.adsCommon.StartAppSDK;
 import com.startapp.android.publish.adsCommon.VideoListener;
 import com.startapp.android.publish.adsCommon.adListeners.AdEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -75,12 +80,18 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     // View Variables
     private  Menu menu;
-    ViewPagerAdapter adapter;
+//    ViewPagerAdapter adapter;
     MainActivity context;
     private RewardedVideoAd mAd;
     ProgressDialog progressDialog ;
     private InterstitialAd interstitial;
     public boolean doubleBackToExitPressedOnce = false;
+
+    ProgressBar progressBarOfferwalls;
+    TextView emptyText;
+    ImageView emptyImage;
+    Button retryButton;
+    ArrayList<OfferWalls> arrOfferWalls = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +145,9 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         if (!mAd.isLoaded()) {
             mAd.loadAd(getResources().getString(R.string.admob_videos), new AdRequest.Builder().build());
         }
-    }@Override
+    }
+
+    @Override
     public void onRewarded(RewardItem reward) {
         award(Integer.parseInt(App.getInstance().get("AdmobVideoCredit_Amount","1")),App.getInstance().get("AdmobVideoCredit_Title",""));
     }
@@ -195,7 +208,6 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -216,6 +228,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
         refreshDisplay();
 
+        load_offerwalls();
     }
 
     @Override
@@ -295,6 +308,21 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     }
 
+    void openRewardedNews() {
+
+        Intent webNews = new Intent(context, FragmentsActivity.class);
+        webNews.putExtra("show","news");
+        startActivityForResult(webNews,2);
+
+    }
+
+    void openUpgrade() {
+
+        Intent webNews = new Intent(context, FragmentsActivity.class);
+        webNews.putExtra("show","upgrade");
+        startActivityForResult(webNews,3);
+
+    }
     public void openStartAppVideo(){
 
         if(App.getInstance().get("StartAppActive",true)){
@@ -585,6 +613,17 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
                 dailyCheckin(Title, SubTitle);
 
                 break;
+            case "webvids":
+                openRewardedVideos();
+                break;
+
+            case "news":
+                openRewardedNews();
+                break;
+
+            case "upgrade":
+                openUpgrade();
+                break;
 
             case "redeem":
 
@@ -625,12 +664,6 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
             case "rate":
 
                 AppUtils.gotoMarket(context);
-
-                break;
-
-            case "webvids":
-
-                openRewardedVideos();
 
                 break;
 
@@ -708,6 +741,13 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     void initViews(){
 
+        emptyText = findViewById(R.id.emptyText);
+        emptyImage = findViewById(R.id.emptyImage);
+        retryButton = findViewById(R.id.retryButton);
+
+        progressBarOfferwalls = findViewById(R.id.progressBarOfferwalls);
+
+
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         int Numboftabs = 1;
@@ -716,6 +756,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
             toolbar.setElevation(4);
         }
 
+        /*
         ViewPager pager = findViewById(R.id.pager);
         SlidingTabLayout tabs = findViewById(R.id.tabs);
         CharSequence Titles[] = {getResources().getString(R.string.home)};
@@ -743,6 +784,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
             }
         });
         tabs.setViewPager(pager);
+        */
 
         // Navigation Drawer
         mDrawerLayout = findViewById(R.id.main_activity_DrawerLayout);
@@ -765,7 +807,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowHomeEnabled(false);
             getSupportActionBar().setHomeButtonEnabled(false);
-            getSupportActionBar().setTitle(R.string.app_name);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(false);
@@ -915,4 +957,196 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         });
 
     }
+
+
+    void load_offerwalls(){
+        progressBarOfferwalls.setVisibility(View.VISIBLE);
+        CustomRequest offerwallsRequest = new CustomRequest(Request.Method.POST, APP_OFFERWALLS, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressBarOfferwalls.setVisibility(View.GONE);
+                        try {
+
+                            JSONObject Response = new JSONObject(App.getInstance().deData(response.toString()));
+
+                            if (!Response.getBoolean("error")) {
+
+                                JSONArray offerwalls = Response.getJSONArray("offerwalls");
+
+                                if(offerwalls.length() < 1){
+                                    showLoadError();
+                                }
+
+                                for (int i = 0; i < offerwalls.length(); i++) {
+
+                                    JSONObject obj = offerwalls.getJSONObject(i);
+
+                                    OfferWalls singleOfferWall = new OfferWalls();
+
+                                    singleOfferWall.setOfferid(obj.getString("offer_id"));
+                                    singleOfferWall.setTitle(obj.getString("offer_title"));
+                                    singleOfferWall.setSubtitle(obj.getString("offer_subtitle"));
+                                    singleOfferWall.setImage(obj.getString("offer_thumbnail"));
+                                    singleOfferWall.setAmount(obj.getString("offer_points"));
+                                    singleOfferWall.setType(obj.getString("offer_type"));
+                                    singleOfferWall.setStatus(obj.getString("offer_status"));
+                                    singleOfferWall.setPartner("offerwalls");
+
+                                    if(obj.get("offer_status").equals("Active")){
+                                        arrOfferWalls.add(singleOfferWall);
+                                    }
+
+                                }
+                                showLoadSuccess();
+
+                            }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
+
+                                Dialogs.validationError(MainActivity.this,Response.getInt("error_code"));
+
+                            }else if(DEBUG_MODE){
+
+                                Dialogs.errorDialog(MainActivity.this,"Got Error",Response.getInt("error_code") + ", please contact developer immediately",true,false,"","ok",null);
+
+                            }else{
+                                showLoadError();
+                                Dialogs.serverError(MainActivity.this,getResources().getString(R.string.ok),null);
+                            }
+
+                        } catch (JSONException e) {
+
+                            showLoadError();
+                            if(!DEBUG_MODE){
+                                Dialogs.serverError(MainActivity.this,getResources().getString(R.string.ok),null);
+                            }else{
+                                Dialogs.errorDialog(MainActivity.this,"Got Error",e.toString() + ", please contact developer immediately",true,false,"","ok",null);
+                            }
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                showLoadError();
+                if(DEBUG_MODE){
+                    Dialogs.warningDialog(MainActivity.this,"Got Error",error.toString(),true,false,"","ok",null);
+                }else{
+                    Dialogs.serverError(MainActivity.this,getResources().getString(R.string.ok),null);
+                }
+
+            }
+        });
+
+        App.getInstance().addToRequestQueue(offerwallsRequest);
+
+    }
+
+    void showLoadError(){
+
+        progressBarOfferwalls.setVisibility(View.GONE);
+        emptyImage.setVisibility(View.VISIBLE);
+        emptyText.setVisibility(View.VISIBLE);
+        retryButton.setVisibility(View.VISIBLE);
+
+        retryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                retryLoading();
+
+            }
+        });
+
+    }
+
+    void showLoadSuccess() {
+        findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
+        emptyImage.setVisibility(View.GONE);
+        emptyText.setVisibility(View.GONE);
+        retryButton.setVisibility(View.GONE);
+
+        for(OfferWalls offerwall: arrOfferWalls) {
+            switch (offerwall.getType()) {
+                case "checkin":
+                    updateCheckin(offerwall);
+                    break;
+
+                case "webvids":
+                    updateVideo(offerwall);
+                    break;
+
+                case "news":
+                    updateNews(offerwall);
+                    break;
+
+                case "upgrade":
+                    updateUpgrade(offerwall);
+                    break;
+            }
+        }
+
+        findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
+        findViewById(R.id.layout_retry).setVisibility(View.GONE);
+    }
+
+    void updateCheckin(final OfferWalls offerWall) {
+        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.daily_image));
+        ((TextView)findViewById(R.id.daily_title)).setText(offerWall.getTitle());
+        ((TextView)findViewById(R.id.daily_sub)).setText(offerWall.getSubtitle());
+        findViewById(R.id.daily_checkin).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
+            }
+        });
+    }
+
+    void updateVideo(final OfferWalls offerWall) {
+        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.video_image));
+        ((TextView)findViewById(R.id.video_title)).setText(offerWall.getTitle());
+        ((TextView)findViewById(R.id.video_sub)).setText(offerWall.getSubtitle());
+        findViewById(R.id.web_panel_video).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
+            }
+        });
+    }
+
+    void updateNews(final OfferWalls offerWall) {
+        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.news_image));
+        ((TextView)findViewById(R.id.news_title)).setText(offerWall.getTitle());
+        ((TextView)findViewById(R.id.news_sub)).setText(offerWall.getSubtitle());
+        findViewById(R.id.news).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
+            }
+        });
+    }
+
+    void updateUpgrade(final OfferWalls offerWall) {
+        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.upgrade_image));
+        ((TextView)findViewById(R.id.upgrade_title)).setText(offerWall.getTitle());
+        ((TextView)findViewById(R.id.upgrade_sub)).setText(offerWall.getSubtitle());
+        findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
+            }
+        });
+    }
+
+    void retryLoading(){
+
+        emptyImage.setVisibility(View.GONE);
+        emptyText.setVisibility(View.GONE);
+        retryButton.setVisibility(View.GONE);
+
+        load_offerwalls();
+
+    }
+
 }

@@ -6,16 +6,17 @@ package com.droidoxy.easymoneyrewards.model;
  
 public class Videos {
 
-	private String videoId,Title,SubTitle,Amount,vidURL,Status,openLink,Duration,Thumbnail;
+	private String videoId,Title,SubTitle,Amount, AmountPremium,vidURL,Status,openLink,Duration,Thumbnail;
 
 	public Videos() {
 	}
 
-	public Videos(String videoId, String Title, String SubTitle, String Amount, String vidURL, String Status, String openLink, String Duration, String Thumbnail) {
+	public Videos(String videoId, String Title, String SubTitle, String Amount, String AmountPremium, String vidURL, String Status, String openLink, String Duration, String Thumbnail) {
 
 		this.Title = Title;
 		this.SubTitle = SubTitle;
 		this.Amount = Amount;
+		this.AmountPremium = AmountPremium;
 		this.vidURL = vidURL;
 		this.Status = Status;
 		this.openLink = openLink;
@@ -62,6 +63,14 @@ public class Videos {
 
 	public void setAmount(String Amount) {
 		this.Amount = Amount;
+	}
+
+	public String getAmountPremium() {
+		return AmountPremium;
+	}
+
+	public void setAmountPremium(String AmountPremium) {
+		this.AmountPremium = AmountPremium;
 	}
 
 	public String getVideoURL() {

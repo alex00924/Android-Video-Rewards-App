@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Standard version // Again Blue version -->
+    <!-- Standard version // Again Blue version
     <color name="colorPrimary">#0F4671</color>
     <color name="colorPrimaryDark">#204062</color>
     <color name="colorAccent">#206784</color>
-
+-->
     <!-- Standard version // Red version
 
     <color name="colorPrimary">#FF5252</color>
@@ -24,11 +24,11 @@
     <color name="colorAccent">#3F51B5</color>
 	-->
 
-    <!-- SkyBlue version
+    <!-- SkyBlue version-->
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#FF5252</color>
-	-->
+
 
     <!-- Green version 
     <color name="colorPrimary">#4CAF50</color>

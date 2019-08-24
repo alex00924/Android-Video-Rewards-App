@@ -65,14 +65,6 @@
                     android:textColor="@color/text_gray"
                     android:textSize="@dimen/text_size_12" />
 
-                <com.droidoxy.easymoneyrewards.views.TextView_Lato
-                    android:id="@+id/duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
-                    android:textColor="@color/text_gray"
-                    android:textSize="@dimen/text_size_10" />
-
             </LinearLayout>
 
             <com.droidoxy.easymoneyrewards.views.TextView_Lato

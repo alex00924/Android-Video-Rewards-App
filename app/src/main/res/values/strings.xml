@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">VideoRewards v2</string>
+    <string name="app_name">Jango</string>
 
     <string name="placeholder"> ------ </string>
 
     <string name="all_videos">All Videos</string>
+    <string name="all_news">All News</string>
     <string name="loading_video">Loading Video ..</string>
     <string name="watch_till_end">Watch till End to get Points !</string>
     <string name="no_videos_available_try_again">No videos available</string>
+    <string name="no_news_available_try_again">No news available</string>
     <string name="already_watched">Video Watched Already ! No points pls..</string>
+    <string name="already_read">News Read Already ! No points pls..</string>
     <string name="no_videos_available">No videos available, please try again After SomeTime !!</string>
     <string name="unabe_to_load_offerwalls">Unable to Load Offerwalls \n please try again After SomeTime !!</string>
 
@@ -179,5 +182,25 @@
 
         &copy; 2019 <b> VideoRewards </b> by <b>DroidOXY</b> ]]>
     </string>
+
+    <string name="upgrade_title">Upgrade\nto Premium</string>
+    <string name="upgrade_sub">Double your earnings</string>
+
+    <style name="download_video">Download Video</style>
+    <style name="claim_point">Claim Point</style>
+
+
+    <string name="check">Check</string>
+    <string name="cvv">CVV</string>
+    <string name="expiry">Expiry</string>
+    <string name="card_number">Card Number</string>
+    <string name="pay">Pay</string>
+    <string name="yy">YY</string>
+    <string name="expiry_month">MM</string>
+    <string name="email">Email</string>
+    <style name="upgrade">Upgrade</style>
+    <style name="upgradeAmount"> $20 </style>
+
+    <string name="upgrading_premium">Upgrading to Premium</string>
 
 </resources>

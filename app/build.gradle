@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.droidoxy.easymoneyrewards"
-        minSdkVersion 15
+        minSdkVersion 22
         targetSdkVersion 28
         versionCode 21
         versionName "2.1"
@@ -70,6 +70,11 @@ dependencies {
     // Firebase Libraries
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
+
+    //paystack
+    compile 'co.paystack.android.design.widget:pinpad:1.0.1'
+    compile 'co.paystack.android:paystack:3.0.5'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

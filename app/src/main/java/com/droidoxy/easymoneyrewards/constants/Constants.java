@@ -26,11 +26,16 @@ public interface Constants {
     public static final String APP_PAYOUTS = API_DOMAIN + "api/" + API_VERSION + "/app.Payouts" + API_FILE_EXTENSION;
     public static final String ACCOUNT_REFER = API_DOMAIN + "api/" + API_VERSION + "/account.Refer" + API_FILE_EXTENSION;
     public static final String APP_OFFERWALLS = API_DOMAIN + "api/" + API_VERSION + "/app.OfferWalls" + API_FILE_EXTENSION;
-    public static final String APP_VIDEOS = API_DOMAIN + "api/" + API_VERSION + "/app.Videos" + API_FILE_EXTENSION;public static final String ACCOUNT_REDEEM = API_DOMAIN + "api/" + API_VERSION + "/account.Redeem" + API_FILE_EXTENSION;
+    public static final String APP_VIDEOS = API_DOMAIN + "api/" + API_VERSION + "/app.Videos" + API_FILE_EXTENSION;
+    public static final String APP_NEWS = API_DOMAIN + "api/" + API_VERSION + "/app.News" + API_FILE_EXTENSION;
+    public static final String APP_UPGRADE_PREMIUM = API_DOMAIN + "api/" + API_VERSION + "/app.UpgradePremium" + API_FILE_EXTENSION;
+    public static final String ACCOUNT_REDEEM = API_DOMAIN + "api/" + API_VERSION + "/account.Redeem" + API_FILE_EXTENSION;
     public static final String ACCOUNT_REWARD = API_DOMAIN + "api/" + API_VERSION + "/account.Reward" + API_FILE_EXTENSION;
     public static final String ACCOUNT_BALANCE = API_DOMAIN + "api/" + API_VERSION + "/account.Balance" + API_FILE_EXTENSION;
     public static final String ACCOUNT_CHECKIN = API_DOMAIN + "api/" + API_VERSION + "/account.Checkin" + API_FILE_EXTENSION;
-    public static final String APP_VIDEOSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.VideoStatus" + API_FILE_EXTENSION;public static final String APP_OFFERSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.OfferStatus" + API_FILE_EXTENSION;
+    public static final String APP_VIDEOSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.VideoStatus" + API_FILE_EXTENSION;
+    public static final String APP_NEWSSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.NewsStatus" + API_FILE_EXTENSION;
+    public static final String APP_OFFERSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.OfferStatus" + API_FILE_EXTENSION;
     public static final String ACCOUNT_TRANSACTIONS = API_DOMAIN + "api/" + API_VERSION + "/account.Transactions" + API_FILE_EXTENSION;
 
     public static final int ERROR_SUCCESS = 0;
@@ -52,4 +57,6 @@ public interface Constants {
     public static Boolean DEBUG_MODE = App.getInstance().get("APP_DEBUG_MODE",true);
 
     public static final String LICENSE_COPY = "http://www.codyhub.com/item/video-rewards-android-app";
+
+    public static final int UPGRADE_AMOUNT = 100;
 }

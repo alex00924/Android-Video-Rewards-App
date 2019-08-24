@@ -18,6 +18,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@color/white</item>
     </style>
 
     <style name="Custom" parent="Theme.AppCompat.Light.Dialog.Alert">
@@ -26,6 +27,14 @@
         <item name="DialogSpotColor">@android:color/holo_orange_dark</item>
         <item name="DialogSpotCount">4</item>
     </style>
+
+    <style name="Custom_Premium" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">@string/upgrading_premium</item>
+        <item name="DialogSpotColor">@android:color/holo_orange_dark</item>
+        <item name="DialogSpotCount">4</item>
+    </style>
+
 
     <!-- Navigation Drawer -->
     <style name="NavDrawerRowLayout">
@@ -54,5 +63,24 @@
         <item name="android:layout_marginLeft">@dimen/space72</item>
     </style>
 
+    <style name="TitleText">
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">@color/text_black</item>
+    </style>
+
+    <style name="SubText">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/text_gray</item>
+    </style>
+
+    <style name="upgradeText">
+        <item name="android:textSize">20dp</item>
+        <item name="android:textColor">@color/text_black</item>
+    </style>
+
+    <style name="upgradeMoney">
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">@color/red</item>
+    </style>
 
 </resources>
