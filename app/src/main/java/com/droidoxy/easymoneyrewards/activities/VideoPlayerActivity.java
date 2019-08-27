@@ -71,6 +71,8 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
     private Button btnClaim;
     private Button btnDownload;
     private VideoView myVideoView;
+
+    private boolean canPlay = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -261,6 +263,11 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
                     interstitial.show();
                 }
             }
+
+            @Override
+            public void onAdClosed() {
+                canPlay = true;
+            }
         });
         displayInterstitial();
 //        final Timer AdTimer = new Timer();
@@ -295,7 +302,8 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
     @Override
     protected void onResume() {
         super.onResume();
-        myVideoView.start();
+        if (canPlay)
+            myVideoView.start();
 
     }
 
