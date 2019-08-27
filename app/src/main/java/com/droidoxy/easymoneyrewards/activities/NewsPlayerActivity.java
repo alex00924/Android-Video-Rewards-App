@@ -125,6 +125,7 @@ public class NewsPlayerActivity extends ActivityBase implements RewardedVideoAdL
                 }
             }
         });
+        displayInterstitial();
     }
 
     public void displayInterstitial() {

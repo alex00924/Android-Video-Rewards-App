@@ -131,6 +131,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
                 }
             }
         });
+        displayInterstitial();
 //        final Timer AdTimer = new Timer();
 //        interstitial.setAdListener(new AdListener() {
 //            public void onAdLoaded() {

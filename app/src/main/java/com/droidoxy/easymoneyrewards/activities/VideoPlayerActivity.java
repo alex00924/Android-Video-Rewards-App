@@ -262,6 +262,7 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
                 }
             }
         });
+        displayInterstitial();
 //        final Timer AdTimer = new Timer();
 //        interstitial.setAdListener(new AdListener() {
 //            public void onAdLoaded() {
