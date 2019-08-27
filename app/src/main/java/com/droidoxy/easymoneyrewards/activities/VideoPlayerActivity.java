@@ -120,14 +120,14 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
 
         btnClaim = findViewById(R.id.btn_claim);
         btnDownload = findViewById(R.id.btn_download);
-        btnClaim.setEnabled(false);
+//        btnClaim.setEnabled(false);
         myVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
             @Override
             public void onCompletion(MediaPlayer vmp) {
                 myVideoView.start();
                 isWatched = true;
-                btnClaim.setEnabled(true);
+//                btnClaim.setEnabled(true);
             }
         });
 
