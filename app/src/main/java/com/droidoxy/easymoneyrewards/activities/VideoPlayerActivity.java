@@ -73,6 +73,7 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
     private VideoView myVideoView;
 
     private boolean canPlay = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +135,10 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
             @Override
             public void onClick(View v) {
 //                completeWatch();
+                if (!isWatched) {
+                    Toast.makeText(VideoPlayerActivity.this, "Watch video to the end to claim points", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 awardVideo(getIntent().getStringExtra(EXTRA_REWARDS), getIntent().getStringExtra(EXTRA_VIDEO_ID));
                 displayInterstitial();
             }
