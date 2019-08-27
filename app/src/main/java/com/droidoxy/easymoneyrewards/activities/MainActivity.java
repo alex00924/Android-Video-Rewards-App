@@ -6,12 +6,14 @@ import java.util.Map;
 import java.util.Timer;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.os.Bundle;
@@ -22,7 +24,9 @@ import java.util.TimerTask;
 import android.view.MenuItem;
 import android.content.Intent;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.FrameLayout;
@@ -80,7 +84,6 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     // View Variables
     private  Menu menu;
-//    ViewPagerAdapter adapter;
     MainActivity context;
     private RewardedVideoAd mAd;
     ProgressDialog progressDialog ;
@@ -120,24 +123,30 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         // ADMOB Interstitial
         interstitial = new InterstitialAd(context);
         interstitial.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        interstitial.loadAd(adRequest);
-
-        final Timer AdTimer = new Timer();
-        interstitial.setAdListener(new AdListener() {
+        interstitial.setAdListener(new AdListener(){
+            @Override
             public void onAdLoaded() {
-                AdTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayInterstitial();
-                            }
-                        });
-                    }
-                }, Integer.parseInt(getString(R.string.admob_interstitial_delay)));
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
+                }
             }
         });
+//        final Timer AdTimer = new Timer();
+//        interstitial.setAdListener(new AdListener() {
+//            public void onAdLoaded() {
+//                AdTimer.schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                displayInterstitial();
+//                            }
+//                        });
+//                    }
+//                }, Integer.parseInt(getString(R.string.admob_interstitial_delay)));
+//            }
+//        });
     }
 
 
@@ -188,9 +197,8 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
     }
 
     public void displayInterstitial() {
-        if (interstitial.isLoaded()) {
-            interstitial.show();
-        }
+        AdRequest adRequest = new AdRequest.Builder().setRequestAgent("android_studio:ad_template").build();
+        interstitial.loadAd(adRequest);
     }
 
     void init_v3(){
@@ -270,6 +278,8 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
     }
 
     public void dailyCheckin(String Title, String Message){
+
+        displayInterstitial();
 
         if(App.getInstance().get("NEWINSTALL",true)){
 
@@ -744,7 +754,6 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         emptyText = findViewById(R.id.emptyText);
         emptyImage = findViewById(R.id.emptyImage);
         retryButton = findViewById(R.id.retryButton);
-
         progressBarOfferwalls = findViewById(R.id.progressBarOfferwalls);
 
 
@@ -755,36 +764,6 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             toolbar.setElevation(4);
         }
-
-        /*
-        ViewPager pager = findViewById(R.id.pager);
-        SlidingTabLayout tabs = findViewById(R.id.tabs);
-        CharSequence Titles[] = {getResources().getString(R.string.home)};
-        adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs);
-
-        if(App.getInstance().get("APP_TABS_ENABLE",false)){
-
-            Numboftabs = 2;
-            CharSequence Titles2[] = {getResources().getString(R.string.home), getResources().getString(R.string.transactions)};
-            adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles2,Numboftabs);
-            tabs.setVisibility(View.VISIBLE);
-
-            if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                tabs.setElevation(4);
-            }
-
-        }
-
-        pager.setAdapter(adapter);
-        tabs.setDistributeEvenly(true);
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return getResources().getColor(R.color.tabsScrollColor);
-            }
-        });
-        tabs.setViewPager(pager);
-        */
 
         // Navigation Drawer
         mDrawerLayout = findViewById(R.id.main_activity_DrawerLayout);
@@ -961,6 +940,8 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     void load_offerwalls(){
         progressBarOfferwalls.setVisibility(View.VISIBLE);
+        arrOfferWalls.clear();
+
         CustomRequest offerwallsRequest = new CustomRequest(Request.Method.POST, APP_OFFERWALLS, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -998,6 +979,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
                                     }
 
                                 }
+
                                 showLoadSuccess();
 
                             }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
@@ -1062,81 +1044,48 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
     }
 
     void showLoadSuccess() {
-        findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
         emptyImage.setVisibility(View.GONE);
         emptyText.setVisibility(View.GONE);
         retryButton.setVisibility(View.GONE);
 
-        for(OfferWalls offerwall: arrOfferWalls) {
-            switch (offerwall.getType()) {
-                case "checkin":
-                    updateCheckin(offerwall);
-                    break;
+        LinearLayout grid_layout = findViewById(R.id.grid_layout);
+        grid_layout.removeAllViews();
+        int i = 0;
+        for (i = 0 ; i < arrOfferWalls.size(); i++) {
+            LayoutInflater vi = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View convertView = vi.inflate(R.layout.main_grid_item, null);
+            grid_layout.addView(convertView);
 
-                case "webvids":
-                    updateVideo(offerwall);
-                    break;
+            final OfferWalls leftOfferWalls = arrOfferWalls.get(i);
+            Glide.with(this).load(leftOfferWalls.getImage()).into(((ImageView) convertView.findViewById(R.id.left_image)));
+            ((TextView) convertView.findViewById(R.id.left_title)).setText(leftOfferWalls.getTitle());
+            ((TextView) convertView.findViewById(R.id.left_sub_title)).setText(leftOfferWalls.getSubtitle());
+            convertView.findViewById(R.id.left_layout).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openOfferWall(leftOfferWalls.getTitle(), leftOfferWalls.getSubtitle(), leftOfferWalls.getType());
+                }
+            });
 
-                case "news":
-                    updateNews(offerwall);
-                    break;
-
-                case "upgrade":
-                    updateUpgrade(offerwall);
-                    break;
+            i++;
+            if (i >= arrOfferWalls.size())
+            {
+                convertView.findViewById(R.id.right_layout).setVisibility(View.GONE);
+                break;
             }
+
+            final OfferWalls rightOfferWalls = arrOfferWalls.get(i);
+            Glide.with(this).load(rightOfferWalls.getImage()).into(((ImageView) convertView.findViewById(R.id.right_image)));
+            ((TextView) convertView.findViewById(R.id.right_title)).setText(rightOfferWalls.getTitle());
+            ((TextView) convertView.findViewById(R.id.right_sub_title)).setText(rightOfferWalls.getSubtitle());
+            convertView.findViewById(R.id.right_layout).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openOfferWall(rightOfferWalls.getTitle(), rightOfferWalls.getSubtitle(), rightOfferWalls.getType());
+                }
+            });
+
         }
-
-        findViewById(R.id.layout_main).setVisibility(View.VISIBLE);
-        findViewById(R.id.layout_retry).setVisibility(View.GONE);
-    }
-
-    void updateCheckin(final OfferWalls offerWall) {
-        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.daily_image));
-        ((TextView)findViewById(R.id.daily_title)).setText(offerWall.getTitle());
-        ((TextView)findViewById(R.id.daily_sub)).setText(offerWall.getSubtitle());
-        findViewById(R.id.daily_checkin).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
-            }
-        });
-    }
-
-    void updateVideo(final OfferWalls offerWall) {
-        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.video_image));
-        ((TextView)findViewById(R.id.video_title)).setText(offerWall.getTitle());
-        ((TextView)findViewById(R.id.video_sub)).setText(offerWall.getSubtitle());
-        findViewById(R.id.web_panel_video).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
-            }
-        });
-    }
-
-    void updateNews(final OfferWalls offerWall) {
-        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.news_image));
-        ((TextView)findViewById(R.id.news_title)).setText(offerWall.getTitle());
-        ((TextView)findViewById(R.id.news_sub)).setText(offerWall.getSubtitle());
-        findViewById(R.id.news).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
-            }
-        });
-    }
-
-    void updateUpgrade(final OfferWalls offerWall) {
-        Glide.with(this).load(offerWall.getImage()).into((ImageView)findViewById(R.id.upgrade_image));
-        ((TextView)findViewById(R.id.upgrade_title)).setText(offerWall.getTitle());
-        ((TextView)findViewById(R.id.upgrade_sub)).setText(offerWall.getSubtitle());
-        findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openOfferWall(offerWall.getTitle(), offerWall.getSubtitle(), offerWall.getType());
-            }
-        });
     }
 
     void retryLoading(){

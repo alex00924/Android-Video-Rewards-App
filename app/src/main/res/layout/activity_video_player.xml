@@ -12,34 +12,43 @@
         android:orientation="vertical"
         android:id="@+id/main_layout">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="10dp"
-            android:background="@color/black">
-
+            android:gravity="center">
             <VideoView
                 android:id="@+id/video_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                tools:ignore="MissingConstraints"
-                android:visibility="gone"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:id="@+id/video_image"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:clickable="true"
-                android:src="@drawable/video_play"
-                android:id="@+id/btn_play"
-                />
-        </RelativeLayout>
+                android:layout_weight="1"
+                tools:ignore="MissingConstraints"/>
+
+        </LinearLayout>
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:padding="10dp"-->
+            <!--android:background="@color/black">-->
+
+            <!---->
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:id="@+id/video_image"/>-->
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:clickable="true"-->
+                <!--android:src="@drawable/video_play"-->
+                <!--android:id="@+id/btn_play"-->
+                <!--/>-->
+        <!--</RelativeLayout>-->
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            ads:adSize="BANNER"
+            ads:adSize="MEDIUM_RECTANGLE"
             ads:adUnitId="@string/banner_ad_unit_id" />
 
         <LinearLayout

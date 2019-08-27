@@ -78,10 +78,12 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".activities.VideoPlayerActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".activities.NewsPlayerActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <!-- Firebase Components -->
         <service android:name=".services.MyFirebaseMessagingService" android:exported="false">
@@ -94,7 +96,9 @@
         <!--paystack-->
         <meta-data
             android:name="co.paystack.android.PublicKey"
-            android:value="pk_test_b771f24202cabd83c4f2fc9cbd32528d9615d8c6"/>
+            android:value="pk_test_c9e4417a10eef05d992c75643508561c4466233a"/>
+
+        <!--pk_test_b771f24202cabd83c4f2fc9cbd32528d9615d8c6-->
 
         <!-- Admob components -->
         <meta-data

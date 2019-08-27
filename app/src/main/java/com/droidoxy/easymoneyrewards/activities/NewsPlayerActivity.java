@@ -54,10 +54,10 @@ public class NewsPlayerActivity extends ActivityBase implements RewardedVideoAdL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_player);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_NEWS_TITLE));
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+//        getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_NEWS_TITLE));
 
         imageUrl = getIntent().getStringExtra(EXTRA_NEWS_IMAGE);
         initVIew();
@@ -85,13 +85,16 @@ public class NewsPlayerActivity extends ActivityBase implements RewardedVideoAdL
     private void initVIew() {
         ImageView newsImage = findViewById(R.id.news_image);
         Glide.with(this).load(imageUrl).into(newsImage);
+        TextView newsTitle = findViewById(R.id.news_title);
+        newsTitle.setText(getIntent().getStringExtra(EXTRA_NEWS_TITLE));
         TextView newsContent = findViewById(R.id.news_content);
         newsContent.setText(getIntent().getStringExtra(EXTRA_NEWS_CONTENTS));
         btnClaim = findViewById(R.id.btn_claim);
         btnClaim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                completeWatch();
+                awardNews(getIntent().getStringExtra(EXTRA_REWARDS), getIntent().getStringExtra(EXTRA_NEWS_ID));
+                displayInterstitial();
             }
         });
     }
@@ -114,29 +117,19 @@ public class NewsPlayerActivity extends ActivityBase implements RewardedVideoAdL
         interstitial = new InterstitialAd(NewsPlayerActivity.this);
         interstitial.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
         interstitial.loadAd(adRequest);
-
-        final Timer AdTimer = new Timer();
-        interstitial.setAdListener(new AdListener() {
+        interstitial.setAdListener(new AdListener(){
+            @Override
             public void onAdLoaded() {
-                AdTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayInterstitial();
-                            }
-                        });
-                    }
-                }, Integer.parseInt(getString(R.string.admob_interstitial_delay)));
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
+                }
             }
         });
     }
 
     public void displayInterstitial() {
-        if (interstitial.isLoaded()) {
-            interstitial.show();
-        }
+        AdRequest adRequest = new AdRequest.Builder().setRequestAgent("android_studio:ad_template").build();
+        interstitial.loadAd(adRequest);
     }
 
     private void loadRewardedVideoAd() {
@@ -308,6 +301,87 @@ public class NewsPlayerActivity extends ActivityBase implements RewardedVideoAdL
         intent.putExtra("id", getIntent().getStringExtra(EXTRA_NEWS_ID));
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    void awardNews(final String Points,final String newsId){
+
+        CustomRequest videoRewardRequest = new CustomRequest(Request.Method.POST, APP_NEWSSTATUS,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try{
+
+                            JSONObject Response = new JSONObject(App.getInstance().deData(response.toString()));
+
+                            if(!Response.getBoolean("error") && Response.getInt("error_code") == ERROR_SUCCESS){
+
+                                // Video saved Success
+                                App.getInstance().store("APPNEWS_"+newsId,true);
+                                AppUtils.toastShort(NewsPlayerActivity.this,Points+ " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.successfull_received));
+
+                            }else if(Response.getInt("error_code") == 420) {
+
+                                // 420 - Video watched Already
+                                AppUtils.toastShort(NewsPlayerActivity.this,getResources().getString(R.string.already_read));
+                                App.getInstance().store("APPNEWS_"+newsId,true);
+
+                            }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
+
+                                Dialogs.validationError(NewsPlayerActivity.this,Response.getInt("error_code"));
+
+                            }else if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(NewsPlayerActivity.this,Response.getString("error_code"),Response.getString("error_description"),false,false,"",getResources().getString(R.string.ok),null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(NewsPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }catch (Exception e){
+
+                            if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(NewsPlayerActivity.this,"Got Error",e.toString() + ", please contact developer immediately",false,false,"","ok",null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(NewsPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }
+
+                    }},new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if(DEBUG_MODE){
+
+                    // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                    Dialogs.errorDialog(NewsPlayerActivity.this,"Got Error",error.toString(),true,false,"","ok",null);
+
+                }else{
+
+                    // Server error
+                    AppUtils.toastShort(NewsPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                }
+
+            }}){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("data", App.getInstance().getDataCustom(newsId,Points));
+                return params;
+            }
+        };
+
+        App.getInstance().addToRequestQueue(videoRewardRequest);
+
     }
 
 }

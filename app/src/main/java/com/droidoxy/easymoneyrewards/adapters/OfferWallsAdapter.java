@@ -61,7 +61,7 @@ public class OfferWallsAdapter extends RecyclerView.Adapter<OfferWallsAdapter.My
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_offerwall_list, parent, false);
+                .inflate(R.layout.item_main_grid, parent, false);
 
         return new MyViewHolder(itemView);
 

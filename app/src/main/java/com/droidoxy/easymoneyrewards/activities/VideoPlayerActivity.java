@@ -1,15 +1,19 @@
 package com.droidoxy.easymoneyrewards.activities;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -48,6 +52,8 @@ import java.util.TimerTask;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
+
 public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAdListener {
     public static final String EXTRA_VIDEO_URL = "video_url";
     public static final String EXTRA_VIDEO_THUMB = "video_thumb";
@@ -64,16 +70,15 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
 
     private Button btnClaim;
     private Button btnDownload;
-
+    private VideoView myVideoView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_VIDEO_TITLE));
-
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setHomeButtonEnabled(true);
+//        getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_VIDEO_TITLE));
 
         url = getIntent().getStringExtra(EXTRA_VIDEO_URL);
         thumb_url = getIntent().getStringExtra(EXTRA_VIDEO_THUMB);
@@ -83,43 +88,32 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
         init_admob();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case android.R.id.home: {
-
-                finish();
-                return true;
-            }
-
-            default: {
-
-                return super.onOptionsItemSelected(item);
-            }
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        switch (item.getItemId()) {
+//
+//            case android.R.id.home: {
+//
+//                finish();
+//                return true;
+//            }
+//
+//            default: {
+//
+//                return super.onOptionsItemSelected(item);
+//            }
+//        }
+//    }
 
     private void initVIew() {
-        final VideoView myVideoView = findViewById(R.id.video_view);
+        TextView titleVIew = findViewById(R.id.video_title);
+        titleVIew.setText(getIntent().getStringExtra(EXTRA_VIDEO_TITLE));
+
+        myVideoView = findViewById(R.id.video_view);
         myVideoView.setVideoURI(Uri.parse(url));
         myVideoView.setMediaController(new MediaController(this));
         myVideoView.requestFocus();
-
-        ImageView videoImage = findViewById(R.id.video_image);
-        Glide.with(this).load(thumb_url).into(videoImage);
-
-        final View btnPlay = findViewById(R.id.btn_play);
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myVideoView.start();
-                findViewById(R.id.video_image).setVisibility(View.GONE);
-                findViewById(R.id.btn_play).setVisibility(View.GONE);
-                findViewById(R.id.video_view).setVisibility(View.VISIBLE);
-            }
-        });
 
         btnClaim = findViewById(R.id.btn_claim);
         btnDownload = findViewById(R.id.btn_download);
@@ -137,7 +131,9 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
         btnClaim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                completeWatch();
+//                completeWatch();
+                awardVideo(getIntent().getStringExtra(EXTRA_REWARDS), getIntent().getStringExtra(EXTRA_VIDEO_ID));
+                displayInterstitial();
             }
         });
 
@@ -145,29 +141,66 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
             @Override
             public void onClick(View v) {
                 beginDownload();
+                displayInterstitial();
             }
         });
     }
 
     private long downloadID;
-    private void beginDownload(){
-        String strPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+    private void download() {
+        try {
+
+            //        String strPath = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).getPath();
         String fileName = url.substring(url.lastIndexOf('/'));
 
-        File file=new File( strPath + fileName );
+//        File downloadDirectory = new File(Environment.getDataDirectory() + "/Jango/");
+//        if (!downloadDirectory.exists()) {
+//            downloadDirectory.mkdir();
+//        }
+//        Log.e("PATH---", downloadDirectory.getPath());
+//        File file=new File( downloadDirectory.getPath() + "/" + fileName );
         /*
         Create a DownloadManager.Request with all the information necessary to start the download
          */
-        DownloadManager.Request request=new DownloadManager.Request(Uri.parse(url))
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url))
                 .setTitle(getIntent().getStringExtra(EXTRA_VIDEO_TITLE))// Title of the Download Notification
                 .setDescription("Downloading Video File")// Description of the Download Notification
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)// Visibility of the download Notification
-                .setDestinationUri(Uri.fromFile(file))// Uri of the destination file
+                .setDestinationInExternalPublicDir(DIRECTORY_DOWNLOADS,
+                        File.separator + "Jango" + File.separator + fileName)
+//                .setDestinationUri(Uri.fromFile(file))// Uri of the destination file
                 .setAllowedOverMetered(true)// Set if download is allowed on Mobile network
                 .setAllowedOverRoaming(true);// Set if download is allowed on roaming network
-        DownloadManager downloadManager= (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         downloadID = downloadManager.enqueue(request);// enqueue puts the download request in the queue.
+
+        } catch (Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
+        }
     }
+    private void beginDownload(){
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                download();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            }
+        } else {
+            download();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            download();
+        }
+    }
+
+
     private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -221,30 +254,35 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
         // ADMOB Interstitial
         interstitial = new InterstitialAd(VideoPlayerActivity.this);
         interstitial.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
-        interstitial.loadAd(adRequest);
-
-        final Timer AdTimer = new Timer();
-        interstitial.setAdListener(new AdListener() {
+        interstitial.setAdListener(new AdListener(){
+            @Override
             public void onAdLoaded() {
-                AdTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayInterstitial();
-                            }
-                        });
-                    }
-                }, Integer.parseInt(getString(R.string.admob_interstitial_delay)));
+                if (interstitial.isLoaded()) {
+                    interstitial.show();
+                }
             }
         });
+//        final Timer AdTimer = new Timer();
+//        interstitial.setAdListener(new AdListener() {
+//            public void onAdLoaded() {
+//                AdTimer.schedule(new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                displayInterstitial();
+//                            }
+//                        });
+//                    }
+//                }, Integer.parseInt(getString(R.string.admob_interstitial_delay)));
+//            }
+//        });
     }
 
     public void displayInterstitial() {
-        if (interstitial.isLoaded()) {
-            interstitial.show();
-        }
+        AdRequest adRequest = new AdRequest.Builder().setRequestAgent("android_studio:ad_template").build();
+        interstitial.loadAd(adRequest);
     }
 
     private void loadRewardedVideoAd() {
@@ -256,9 +294,8 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
     @Override
     protected void onResume() {
         super.onResume();
-        findViewById(R.id.video_image).setVisibility(View.VISIBLE);
-        findViewById(R.id.video_view).setVisibility(View.GONE);
-        findViewById(R.id.btn_play).setVisibility(View.VISIBLE);
+        myVideoView.start();
+
     }
 
 
@@ -441,4 +478,87 @@ public class VideoPlayerActivity extends ActivityBase implements RewardedVideoAd
     }
 
      */
+
+
+    void awardVideo(final String Points,final String videoId){
+
+        CustomRequest videoRewardRequest = new CustomRequest(Request.Method.POST, APP_VIDEOSTATUS,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try{
+
+                            JSONObject Response = new JSONObject(App.getInstance().deData(response.toString()));
+
+                            if(!Response.getBoolean("error") && Response.getInt("error_code") == ERROR_SUCCESS){
+
+                                // Video saved Success
+                                App.getInstance().store("APPVIDEO_"+videoId,true);
+                                AppUtils.toastShort(VideoPlayerActivity.this,Points+ " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.successfull_received));
+
+                            }else if(Response.getInt("error_code") == 420) {
+
+                                // 420 - Video watched Already
+                                AppUtils.toastShort(VideoPlayerActivity.this,getResources().getString(R.string.already_watched));
+                                App.getInstance().store("APPVIDEO_"+videoId,true);
+
+                            }else if(Response.getInt("error_code") == 699 || Response.getInt("error_code") == 999){
+
+                                Dialogs.validationError(VideoPlayerActivity.this,Response.getInt("error_code"));
+
+                            }else if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(VideoPlayerActivity.this,Response.getString("error_code"),Response.getString("error_description"),false,false,"",getResources().getString(R.string.ok),null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(VideoPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }catch (Exception e){
+
+                            if(DEBUG_MODE){
+
+                                // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                                Dialogs.errorDialog(VideoPlayerActivity.this,"Got Error",e.toString() + ", please contact developer immediately",false,false,"","ok",null);
+
+                            }else{
+
+                                // Server error
+                                AppUtils.toastShort(VideoPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                            }
+
+                        }
+
+                    }},new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if(DEBUG_MODE){
+
+                    // For Testing ONLY - intended for Developer Use ONLY not visible for Normal App user
+                    Dialogs.errorDialog(VideoPlayerActivity.this,"Got Error",error.toString(),true,false,"","ok",null);
+
+                }else{
+
+                    // Server error
+                    AppUtils.toastShort(VideoPlayerActivity.this,getResources().getString(R.string.msg_server_problem));
+                }
+
+            }}){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("data", App.getInstance().getDataCustom(videoId,Points));
+                return params;
+            }
+        };
+
+        App.getInstance().addToRequestQueue(videoRewardRequest);
+
+    }
+
 }

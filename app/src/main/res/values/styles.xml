@@ -64,12 +64,12 @@
     </style>
 
     <style name="TitleText">
-        <item name="android:textSize">30dp</item>
+        <item name="android:textSize">25dp</item>
         <item name="android:textColor">@color/text_black</item>
     </style>
 
     <style name="SubText">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:textColor">@color/text_gray</item>
     </style>
 

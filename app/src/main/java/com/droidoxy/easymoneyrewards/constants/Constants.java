@@ -54,7 +54,7 @@ public interface Constants {
 
     public static final int ERROR_ACCOUNT_ID = 400;
 
-    public static Boolean DEBUG_MODE = App.getInstance().get("APP_DEBUG_MODE",true);
+    public static Boolean DEBUG_MODE = App.getInstance().get("APP_DEBUG_MODE",false);
 
     public static final String LICENSE_COPY = "http://www.codyhub.com/item/video-rewards-android-app";
 
