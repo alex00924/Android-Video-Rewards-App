@@ -6,6 +6,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputFilter;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.android.volley.Request;
@@ -42,11 +43,19 @@ public class FragmentsActivity extends ActivityBase {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String Type = getIntent().getStringExtra("show");
+
+        if (Type != null && !Type.equals("upgrade")) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);//will hide the title
+            getSupportActionBar().hide();
+        }
+
         setContentView(R.layout.activity_fragments);
         ctx = this;
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         handleFragments(getIntent());
 
@@ -121,7 +130,7 @@ public class FragmentsActivity extends ActivityBase {
 
                 case "upgrade":
 
-                    getSupportActionBar().setTitle(R.string.all_news);
+//                    getSupportActionBar().setTitle(R.string.all_news);
                     transaction.add(R.id.frame_layout, new PremiumFragment(), "upgrade");
 
                     break;
