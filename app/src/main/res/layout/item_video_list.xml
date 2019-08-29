@@ -75,16 +75,45 @@
 
             </LinearLayout>
 
-            <com.droidoxy.easymoneyrewards.views.TextView_Lato
-                android:id="@+id/amount"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/rounded_bg"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
                 android:layout_marginEnd="20.6dp"
-                android:layout_marginRight="20.6dp"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_14" />
+                android:layout_marginRight="20.6dp">
+
+                <com.droidoxy.easymoneyrewards.views.TextView_Lato
+                    android:id="@+id/amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_points_bg"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_14"
+                    android:text="+ 2"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:background="@drawable/rounded_premium_bg"
+                    android:layout_marginTop="5dp">
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/premium_icon"
+                        android:layout_marginBottom="2dp"/>
+
+                    <com.droidoxy.easymoneyrewards.views.TextView_Lato
+                        android:id="@+id/amount_premium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_14"
+                        android:text=" 2"/>
+
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

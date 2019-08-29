@@ -14,12 +14,6 @@ android {
         multiDexEnabled true
     }
 
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
 }
 
 // Maven Repositories
@@ -47,6 +41,8 @@ dependencies {
     implementation 'com.android.support:customtabs:28.0.0'
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:appcompat-v7:28.0.0'
+//    implementation 'androidx.appcompat:appcompat:1.0.2'
+//    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     // MultiDex Dependency
     implementation 'com.android.support:multidex:1.0.3'
@@ -74,6 +70,10 @@ dependencies {
     //paystack
     compile 'co.paystack.android.design.widget:pinpad:1.0.1'
     compile 'co.paystack.android:paystack:3.0.5'
+
+
+    //image slider
+    implementation project(path: ':autoimageslider')
 
 }
 

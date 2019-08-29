@@ -1,6 +1,7 @@
 package com.droidoxy.easymoneyrewards.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -67,6 +68,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder>{
             holder.subtitle.setText(content.substring(0, 20));
         }
         holder.amount.setText("+ " + newsPoints);
+//        if (bPremium) {
+//            ((GradientDrawable)holder.amount.getBackground()).setColor(context.getResources().getColor(R.color.yellow));
+//        }
+
+        holder.amount.setText("+ " + news.getAmount());
+        holder.amountPremium.setText(" " + news.getAmountPremium());
 
         Glide.with(context).load(image)
                 .apply(new RequestOptions().override(120,120))
@@ -94,7 +101,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder>{
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView date,title,subtitle,amount,duration;
+        TextView date,title,subtitle,amount,duration, amountPremium;
         ImageView image;
         LinearLayout SingleItem;
         ViewHolder(View itemView) {
@@ -105,6 +112,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder>{
             subtitle = itemView.findViewById(R.id.subtitle);
             duration = itemView.findViewById(R.id.duration);
             amount = itemView.findViewById(R.id.amount);
+            amountPremium = itemView.findViewById(R.id.amount_premium);
             image = itemView.findViewById(R.id.image);
             SingleItem = itemView.findViewById(R.id.SingleItem);
         }

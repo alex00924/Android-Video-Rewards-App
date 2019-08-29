@@ -1,6 +1,7 @@
 package com.droidoxy.easymoneyrewards.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -69,8 +70,8 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
             holder.subtitle.setText(subtitle);
         }
         holder.duration.setText("Duration : " + timeDuration);
-        holder.amount.setText("+ " + videoPoints);
-
+        holder.amount.setText("+ " + video.getAmount());
+        holder.amountPremium.setText(" " + video.getAmountPremium());
         Glide.with(context).load(image)
                 .apply(new RequestOptions().override(120,120))
                 .apply(RequestOptions.placeholderOf(R.drawable.ic_place_holder))
@@ -97,7 +98,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView date,title,subtitle,amount,duration;
+        TextView date,title,subtitle,amount,duration, amountPremium;
         ImageView image;
         LinearLayout SingleItem;
         ViewHolder(View itemView) {
@@ -108,6 +109,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.ViewHolder
             subtitle = itemView.findViewById(R.id.subtitle);
             duration = itemView.findViewById(R.id.duration);
             amount = itemView.findViewById(R.id.amount);
+            amountPremium = itemView.findViewById(R.id.amount_premium);
             image = itemView.findViewById(R.id.image);
             SingleItem = itemView.findViewById(R.id.SingleItem);
         }

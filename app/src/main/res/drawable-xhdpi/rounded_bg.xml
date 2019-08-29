@@ -10,10 +10,10 @@
         android:startColor="@color/colorPrimary" />
 
     <padding
-        android:bottom="@dimen/space6"
+        android:bottom="@dimen/space5"
         android:left="@dimen/space18"
         android:right="@dimen/space18"
-        android:top="@dimen/space6"/>
+        android:top="@dimen/space5"/>
 
     <corners
         android:bottomLeftRadius="@dimen/space20"

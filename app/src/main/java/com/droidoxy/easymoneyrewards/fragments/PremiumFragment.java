@@ -3,6 +3,7 @@ package com.droidoxy.easymoneyrewards.fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -20,11 +21,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.droidoxy.easymoneyrewards.R;
 import com.droidoxy.easymoneyrewards.activities.FragmentsActivity;
+import com.droidoxy.easymoneyrewards.adapters.SliderAdapter;
 import com.droidoxy.easymoneyrewards.app.App;
 import com.droidoxy.easymoneyrewards.constants.Constants;
 import com.droidoxy.easymoneyrewards.utils.AppUtils;
 import com.droidoxy.easymoneyrewards.utils.CustomRequest;
 import com.droidoxy.easymoneyrewards.utils.Dialogs;
+import com.smarteist.autoimageslider.IndicatorAnimations;
+import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 
 import org.json.JSONObject;
 
@@ -59,6 +65,8 @@ public class PremiumFragment extends Fragment {
     private int expiryMonth, expiryYear;
     Context ctx;
     private AlertDialog updatingDlg;
+
+    SliderView sliderView;
 
     public PremiumFragment() {
         // Required empty public constructor
@@ -119,6 +127,26 @@ public class PremiumFragment extends Fragment {
         });
 
         updateView();
+
+        sliderView = view.findViewById(R.id.imageSlider);
+
+        final SliderAdapter adapter = new SliderAdapter(getContext());
+
+        sliderView.setSliderAdapter(adapter);
+
+        sliderView.setIndicatorAnimation(IndicatorAnimations.SLIDE); //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+        sliderView.setSliderTransformAnimation(SliderAnimations.CUBEINROTATIONTRANSFORMATION);
+        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_RIGHT);
+        sliderView.setIndicatorSelectedColor(Color.WHITE);
+        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+        sliderView.startAutoCycle();
+
+        sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
+            @Override
+            public void onIndicatorClicked(int position) {
+                sliderView.setCurrentPagePosition(position);
+            }
+        });
 
     }
 

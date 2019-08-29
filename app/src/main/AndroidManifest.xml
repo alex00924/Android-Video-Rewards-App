@@ -25,10 +25,10 @@
         android:name=".app.App"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        tools:replace="android:icon"
         android:usesCleartextTraffic="true"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
 
         <!--    Added in v2.1    -->
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
