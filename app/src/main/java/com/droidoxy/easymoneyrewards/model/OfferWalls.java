@@ -6,19 +6,20 @@ package com.droidoxy.easymoneyrewards.model;
  
 public class OfferWalls {
 
-    private String status,type,uniq_id,offerid,title,url,subtitle,amount, image, bg_image,partner,OriginalAmount,inst_title,inst1,inst2,inst3,inst4;
+    private String status,type,uniq_id,offerid,title,url,subtitle,amount,amountPremium, image, bg_image,partner,OriginalAmount,inst_title,inst1,inst2,inst3,inst4;
     private Boolean InappViewable;
 
     public OfferWalls() {
     }
 
-    public OfferWalls(String status, String type, String image, String title, String amount, String OriginalAmount, String url, String subtitle, String partner, String uniq_id, String offerid, String bg_image, String inst_title, String inst1, String inst2, String inst3, String inst4, Boolean InappViewable) {
+    public OfferWalls(String status, String type, String image, String title, String amount, String amountPremium, String OriginalAmount, String url, String subtitle, String partner, String uniq_id, String offerid, String bg_image, String inst_title, String inst1, String inst2, String inst3, String inst4, Boolean InappViewable) {
         this.status = status;
         this.type = type;
         this.image = image;
         this.title = title;
         this.url = url;
         this.amount = amount;
+        this.amountPremium = amountPremium;
         this.OriginalAmount = OriginalAmount;
         this.partner = partner;
         this.subtitle = subtitle;
@@ -120,6 +121,15 @@ public class OfferWalls {
     public void setAmount(String amount) {
         this.amount = amount;
     }
+
+    public void setAmountPremium(String amount) {
+        this.amountPremium = amount;
+    }
+
+    public String getAmountPremium() {
+        return amountPremium;
+    }
+
 
     public String getOriginalAmount() {
         return OriginalAmount;

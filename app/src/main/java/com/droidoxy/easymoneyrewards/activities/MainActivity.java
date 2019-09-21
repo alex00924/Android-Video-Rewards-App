@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -159,7 +160,14 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     @Override
     public void onRewarded(RewardItem reward) {
-        award(Integer.parseInt(App.getInstance().get("AdmobVideoCredit_Amount","1")),App.getInstance().get("AdmobVideoCredit_Title",""));
+        OfferWalls startApp = getOfferwallByType("admobvideo");
+        String strPremium = App.getInstance().get("user_premium", "0");
+        boolean bPremium = strPremium.equals("1") ? true : false;
+        String amount = "0";
+        if (startApp != null) {
+            amount = bPremium ? startApp.getAmountPremium() : startApp.getAmount();
+        }
+        award(Integer.parseInt(amount),App.getInstance().get("AdmobVideoCredit_Title",""));
     }
 
     @Override
@@ -258,6 +266,15 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
     void openRefer(){
         Intent transactions = new Intent(context, FragmentsActivity.class);
         transactions.putExtra("show","refer");
+        OfferWalls refer = getOfferwallByType("refer");
+        String strPremium = App.getInstance().get("user_premium", "0");
+        boolean bPremium = strPremium.equals("1") ? true : false;
+        String amount = "0";
+        if (refer != null) {
+            amount = bPremium ? refer.getAmountPremium() : refer.getAmount();
+        }
+
+        transactions.putExtra("amounts", amount);
         startActivityForResult(transactions,1);
     }
 
@@ -345,8 +362,14 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
                 @Override
                 public void onVideoCompleted() {
-
-                    award(Integer.parseInt(App.getInstance().get("StartAppVideoCredit_Amount","1")),App.getInstance().get("StartAppVideoCredit_Title",""));
+                    OfferWalls startApp = getOfferwallByType("startapp");
+                    String strPremium = App.getInstance().get("user_premium", "0");
+                    boolean bPremium = strPremium.equals("1") ? true : false;
+                    String amount = "0";
+                    if (startApp != null) {
+                        amount = bPremium ? startApp.getAmountPremium() : startApp.getAmount();
+                    }
+                    award(Integer.parseInt(amount), App.getInstance().get("StartAppVideoCredit_Title",""));
 
                 }
             });
@@ -477,9 +500,17 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
 
     // Linked Functions
     void dailyChekinReward(){
+        OfferWalls dailyCheckin = getOfferwallByType("checkin");
+        String strPremium = App.getInstance().get("user_premium", "0");
+        String points = "0";
+        if (dailyCheckin != null) {
+            points = strPremium.equals("1") ? dailyCheckin.getAmountPremium() : dailyCheckin.getAmount();
+        }
 
         showpDialog();
 
+        final String finalPoints = points;
+        final String finalPoints1 = points;
         CustomRequest dailyCheckinRequest = new CustomRequest(Request.Method.POST, ACCOUNT_CHECKIN,null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -494,7 +525,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
                             if(!Response.getBoolean("error") && Response.getInt("error_code") == ERROR_SUCCESS){
 
                                 // Reward received Succesfully
-                                Dialogs.succesDialog(context,getResources().getString(R.string.congratulations),App.getInstance().get("DAILY_REWARD","") + " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.successfull_received),false,false,"",getResources().getString(R.string.ok),null);
+                                Dialogs.succesDialog(context,getResources().getString(R.string.congratulations), finalPoints + " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.successfull_received),false,false,"",getResources().getString(R.string.ok),null);
                                 updateBalanceInBg();
 
                             }else if(Response.getInt("error_code") == 410){
@@ -544,7 +575,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params = new HashMap<>();
-                params.put("data", App.getInstance().getData());
+                params.put("data", App.getInstance().getDataCustom(finalPoints1, ""));
                 return params;
             }
         };
@@ -971,6 +1002,7 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
                                     singleOfferWall.setSubtitle(obj.getString("offer_subtitle"));
                                     singleOfferWall.setImage(obj.getString("offer_thumbnail"));
                                     singleOfferWall.setAmount(obj.getString("offer_points"));
+                                    singleOfferWall.setAmountPremium(obj.getString("offer_points_premium"));
                                     singleOfferWall.setType(obj.getString("offer_type"));
                                     singleOfferWall.setStatus(obj.getString("offer_status"));
                                     singleOfferWall.setPartner("offerwalls");
@@ -1098,5 +1130,15 @@ public class MainActivity extends ActivityBase implements RewardedVideoAdListene
         load_offerwalls();
 
     }
+
+    private OfferWalls getOfferwallByType(String strType) {
+        int i= 0;
+        for (i = 0 ; i < arrOfferWalls.size() ; i ++ ) {
+            if (arrOfferWalls.get(i).getType().equals(strType))
+                return arrOfferWalls.get(i);
+        }
+        return null;
+    }
+
 
 }

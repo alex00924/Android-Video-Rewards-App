@@ -117,14 +117,14 @@ public class App extends MultiDexApplication implements Constants {
                             }
                         }
                     }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
 
-                    App.getInstance().removeData();
-                    App.getInstance().readData();
-                }
-            }) {
-
+                            App.getInstance().removeData();
+                            App.getInstance().readData();
+                        }
+                    })
+            {
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
@@ -340,6 +340,11 @@ public class App extends MultiDexApplication implements Constants {
     public String getBalance() {
 
         return appStorage.get("balance","0");
+    }
+
+    private boolean isPremium() {
+        String strPremium = this.get("user_premium", "0");
+        return strPremium.equals("1") ? true : false;
     }
 
     public String getData() {

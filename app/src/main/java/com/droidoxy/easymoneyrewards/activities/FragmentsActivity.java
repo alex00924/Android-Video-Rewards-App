@@ -87,9 +87,11 @@ public class FragmentsActivity extends ActivityBase {
                     break;
 
                 case "refer" :
-
+                    String amount = intent.getStringExtra("amounts");
                     getSupportActionBar().setTitle(R.string.refer);
-                    transaction.add(R.id.frame_layout, new ReferFragment(), "refer");
+                    ReferFragment referFragment = new ReferFragment();
+                    referFragment.setAmount(amount);
+                    transaction.add(R.id.frame_layout, referFragment, "refer");
 
                     break;
 

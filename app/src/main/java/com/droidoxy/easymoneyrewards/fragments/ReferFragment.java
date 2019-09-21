@@ -49,9 +49,13 @@ public class ReferFragment extends Fragment {
     LinearLayout inviteLayout, referCodeLayout;
 
     Context ctx;
-
+    String amount = "0";
     public ReferFragment() {
         // Required empty public constructor
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
     }
 
     View view;
@@ -85,7 +89,7 @@ public class ReferFragment extends Fragment {
 
         if(App.getInstance().get("refer_status",true)){ inviteLayout.setVisibility(View.GONE); }
 
-        referDescription.setText(getResources().getString(R.string.referDescription) + " " + App.getInstance().get("REFER_REWARD","") + " " + getResources().getString(R.string.app_currency));
+        referDescription.setText(getResources().getString(R.string.referDescription) + " " + amount + " " + getResources().getString(R.string.app_currency));
 
         referCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +146,7 @@ public class ReferFragment extends Fragment {
         { Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
-            String sAux = getResources().getString(R.string.get)+" "+ App.getInstance().get("REFER_REWARD","")+" "+getResources().getString(R.string.app_currency)+" "+getResources().getString(R.string.refer_text)+" "+App.getInstance().get("refer_code","")+"\n\n";
+            String sAux = getResources().getString(R.string.get)+" "+ amount+" "+getResources().getString(R.string.app_currency)+" "+getResources().getString(R.string.refer_text)+" "+App.getInstance().get("refer_code","")+"\n\n";
             sAux = sAux + "https://play.google.com/store/apps/details?id="+ctx.getPackageName()+"\n";
             i.putExtra(Intent.EXTRA_TEXT, sAux);
             startActivity(Intent.createChooser(i, getString(R.string.choose_one)));
@@ -198,7 +202,7 @@ public class ReferFragment extends Fragment {
 
                                 // Refer Success
                                 App.getInstance().store("refer_status",true);
-                                Dialogs.succesDialog(ctx, getResources().getString(R.string.congratulations), App.getInstance().get("REFER_REWARD","") + " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.invitation_bonus_received), false, false, "", getResources().getString(R.string.ok), new SweetAlertDialog.OnSweetClickListener() {
+                                Dialogs.succesDialog(ctx, getResources().getString(R.string.congratulations), amount + " " + getResources().getString(R.string.app_currency) + " " + getResources().getString(R.string.invitation_bonus_received), false, false, "", getResources().getString(R.string.ok), new SweetAlertDialog.OnSweetClickListener() {
                                     @Override
                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
 
@@ -286,7 +290,7 @@ public class ReferFragment extends Fragment {
             @Override
             protected Map<String,String> getParams(){
                 Map<String,String> params = new HashMap<String, String>();
-                params.put("data", App.getInstance().getDataCustom("refer",RefererCode));
+                params.put("data", App.getInstance().getDataCustom(amount,RefererCode));
                 return params;
             }
         };

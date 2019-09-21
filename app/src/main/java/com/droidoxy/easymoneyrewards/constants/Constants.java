@@ -38,6 +38,10 @@ public interface Constants {
     public static final String APP_OFFERSTATUS = API_DOMAIN + "api/" + API_VERSION + "/app.OfferStatus" + API_FILE_EXTENSION;
     public static final String ACCOUNT_TRANSACTIONS = API_DOMAIN + "api/" + API_VERSION + "/account.Transactions" + API_FILE_EXTENSION;
 
+    public static final String PAYSTACK_PAY = API_DOMAIN + "api/" + API_VERSION + "/paystack.pay" + API_FILE_EXTENSION + "?accountID=";
+    public static final String PAYPAL_PAY = API_DOMAIN + "api/" + API_VERSION + "/paypal.pay" + API_FILE_EXTENSION + "?accountID=";
+    public static final String PAYMENT_VERIFY = API_DOMAIN+ "api/" + API_VERSION +  "/payment.verify" + API_FILE_EXTENSION;
+
     public static final int ERROR_SUCCESS = 0;
 
     public static final int ERROR_LOGIN_TAKEN = 300;
